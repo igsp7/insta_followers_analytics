@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: chromedriver-install
+Version: 1.0.3
+Summary: Package for installing the latest chrome/firefox webdrivers automatically.
+Home-page: http://github.com/shadowmoose/chrome_driver
+Author: ShadowMoose
+Author-email: shadowmoose@github.com
+License: MIT
+Platform: UNKNOWN
+
+This package has changed names, please use the new version, https://pypi.org/project/pyderman/ instead.
+
+
