@@ -53,6 +53,18 @@ class FailedGettingUsersError(Error):
 VALID_USERS_TYPE_ = {'followers', 'following'}
  
 def lambda_handler(event, context):
+    if not event: # empty dicts evaluate to False 
+        # default values if nothing is passed
+        event = {
+            "username": "agoodusernameisnotenough",
+            "password": "test1234",
+            "user_id": "didima_feggaria",
+            "login_retries": 3,
+            "get_users_retries": 3,
+            "users_type": "followers",
+            "location": "skg"
+        }
+
     try:
         users_list = getUsers(event)
     except Exception as exc:
