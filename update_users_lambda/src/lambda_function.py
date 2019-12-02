@@ -4,7 +4,6 @@ from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
-import concurrent.futures
 import inspect
 import json
 import logging
@@ -126,8 +125,8 @@ def lambda_handler(event, context):
         }
 
     return_body = {
-        f'new_{event["user_type"]}_count': len(new_users),
-        f'deleted_{event["user_type"]}_count': len(new_users)
+        f'new_{event["users_type"]}_count': len(new_users),
+        f'deleted_{event["users_type"]}_count': len(deleted_users)
     }
     return {
         'statusCode': 200,
