@@ -55,25 +55,20 @@ def main():
             users_table = dynamodb.Table('followers')
             deleted_users_table = dynamodb.Table('deleted_' + event['users_type'])
 
+            #geting the users who belong to the given user_id
             response = users_table.scan(
                 FilterExpression=Attr('belongs_to').eq(event['user_id'])
             )
 
             old_users = response['Items']
-            old_users_ids = []
-
-
-            for old_user in old_users:
-                old_users_ids.append(old_user["ig_id"])
+            old_users_ids = [old_user["ig_id"] for old_user in old_users]
 
             updated_users_set = set(users_list)
             deleted_users = [old_user for old_user in old_users if old_user["ig_id"] not in updated_users_set]
 
-            s = set(old_users_ids)
-            new_users = [x for x in users_list if x not in s]
-
+            old_users_ids_set = set(old_users_ids)
+            new_users = [user_id for user_id in users_list if user_id not in old_users_ids_set]
             for deleted_user in deleted_users:
-                print(deleted_user)
                 users_table.delete_item(
                     Key = {
                         "ig_id": deleted_user["ig_id"],

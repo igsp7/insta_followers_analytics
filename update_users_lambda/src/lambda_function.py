@@ -66,7 +66,59 @@ def lambda_handler(event, context):
         }
 
     try:
-        users_list = getUsers(event)
+        users_list = getUsers(event)[1]
+
+        dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
+        users_table = dynamodb.Table(event["users_type"])
+        deleted_users_table = dynamodb.Table('deleted_' + event['users_type'])
+
+        #geting the users who belong to the given user_id
+        response = users_table.scan(
+            FilterExpression=Attr('belongs_to').eq(event['user_id'])
+        )
+
+        old_users = response['Items']
+        old_users_ids = [old_user["ig_id"] for old_user in old_users]
+
+        updated_users_set = set(users_list)
+        deleted_users = [old_user for old_user in old_users if old_user["ig_id"] not in updated_users_set]
+        
+        old_users_ids_set = set(old_users_ids)
+        new_users = [user_id for user_id in users_list if user_id not in old_users_ids_set]
+
+        for deleted_user in deleted_users:
+            users_table.delete_item(
+                Key = {
+                    "ig_id": deleted_user["ig_id"],
+                    "followed_date": deleted_user["followed_date"]
+                }
+            )
+
+            deleted_users_table.put_item(
+                Item = deleted_user
+            )
+        
+        current_time = int(time.time())
+
+        users_table_item_dict = {
+            "belongs_to": event["user_id"]
+        }
+        if 'hashtag' in event:
+            users_table_item_dict.update(hashtag = event["hashtag"])
+
+        if 'location' in event:
+            users_table_item_dict.update(location = event["location"])
+
+        for new_user in new_users:
+                users_table_item_dict.update([
+                    ("ig_id", new_user),
+                    ("followed_date", current_time)
+                ])
+                users_table.put_item(
+                    Item = users_table_item_dict
+                )
+                current_time -= 1
+
     except Exception as exc:
         return {
             'statusCode': '500',
@@ -74,9 +126,8 @@ def lambda_handler(event, context):
         }
 
     return_body = {
-        'count': len(users_list),
-        'users': users_list
-        
+        f'new_{event["user_type"]}_count': len(new_users),
+        f'deleted_{event["user_type"]}_count': len(new_users)
     }
     return {
         'statusCode': 200,
