@@ -1,3 +1,4 @@
 selenium==2.53.6
 chromedriver-install==1.0.3
 beautifulsoup4==4.8.1
+boto3==1.10.28
