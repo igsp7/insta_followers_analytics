@@ -2,15 +2,17 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
-import os
-import json
-import random
+import boto3
+from boto3.dynamodb.conditions import Attr, Key
 import concurrent.futures
-import time
-import sys
-import logging
 import inspect
- 
+import json
+import logging
+import os
+import random
+import sys
+import time
+
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
@@ -31,7 +33,6 @@ chrome_options.binary_location = os.getcwd() + "/bin/headless-chromium"
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 class Error(Exception):
     """Base class for exceptions in this module."""
@@ -144,7 +145,7 @@ def getUsersList(driver, users_count, type_):
     return users_list
 
 def getUsers(hyperparameters):
-    type_ = hyperparameters['users_type']
+    type_ = hyperparameters["users_type"]
     checkUsersType_(type_) 
     logger.info('Getting users')
     driver = webdriver.Chrome(chrome_options=chrome_options)

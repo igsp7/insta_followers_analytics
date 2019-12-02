@@ -2,16 +2,15 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
-import time
-import random
-import sys
-import threading
-import concurrent.futures
-import math
-import inspect
-import logging
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
+import concurrent.futures
+import inspect
+import logging
+import random
+import sys
+import time
+import threading
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] (%(threadName)-9s) %(message)s',)
 VALID_USERS_TYPE_ = {'followers', 'following'}
@@ -40,7 +39,8 @@ def main():
         "user_id": "didima_feggaria",
         "login_retries": 3,
         "get_users_retries": 3,
-        "users_type": "followers"
+        "users_type": "followers",
+        "location": "skg"
     }
     with concurrent.futures.ThreadPoolExecutor(thread_name_prefix="Thread") as executor:
         future_followers = executor.submit(getUsers, event)
@@ -90,13 +90,23 @@ def main():
                 )
             
             current_time = int(time.time())
+
+            users_table_item_dict = {
+                "belongs_to": event["user_id"]
+            }
+            if 'hashtag' in event:
+                users_table_item_dict.update(hashtag = event["hashtag"])
+
+            if 'location' in event:
+                users_table_item_dict.update(location = event["location"])
+
             for new_user in new_users:
+                users_table_item_dict.update([
+                    ("ig_id", new_user),
+                    ("followed_date", current_time)
+                ])
                 users_table.put_item(
-                    Item = {
-                        "ig_id" : new_user,
-                        "followed_date" : current_time,
-                        "belongs_to" : event["user_id"]
-                    }
+                    Item = users_table_item_dict
                 )
                 current_time -= 1
 
