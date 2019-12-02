@@ -40,7 +40,8 @@ def main():
         "login_retries": 3,
         "get_users_retries": 3,
         "users_type": "followers",
-        "location": "skg"
+        "location": "skg",
+        "account_privacy": "public"
     }
     with concurrent.futures.ThreadPoolExecutor(thread_name_prefix="Thread") as executor:
         future_followers = executor.submit(getUsers, event)
@@ -83,7 +84,8 @@ def main():
             current_time = int(time.time())
 
             users_table_item_dict = {
-                "belongs_to": event["user_id"]
+                "belongs_to": event["user_id"],
+                "account_privacy": event["account_privacy"]
             }
             if 'hashtag' in event:
                 users_table_item_dict.update(hashtag = event["hashtag"])
