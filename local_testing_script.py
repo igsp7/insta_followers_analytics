@@ -49,9 +49,6 @@ def main():
 
             t1 = time.perf_counter()
             users_list = []
-            following_list = []
-            actual_users_count =  future_followers.result()[0]
-            found_users_count = len(future_followers.result()[1])
             users_list = future_followers.result()[1]
 
             dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
@@ -74,7 +71,6 @@ def main():
 
             s = set(old_users_ids)
             new_users = [x for x in users_list if x not in s]
-
 
             for deleted_user in deleted_users:
                 print(deleted_user)
@@ -110,13 +106,6 @@ def main():
                 )
                 current_time -= 1
 
-
-                
-
-
-            
-            
-
             # print('Actual number of following:' + str(future_following.result()[0]))
             # print('Number of found following:' + str(len(future_following.result()[1])))
             # following_list.append(future_following.result()[1])
@@ -127,9 +116,6 @@ def main():
             # print(not_followers)
             t2 = time.perf_counter()
             logging.info(future_followers.result())
-
-            
-            # for item in 
             logging.info(f'Finished in {t2 - t1}')
 
         except Exception as exc:
