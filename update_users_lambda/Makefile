@@ -38,8 +38,9 @@ rebuild-lambda-package:
 	cp -r bin build/.
 	cp -r lib build/.
 	cd build; zip -9qr build.zip .
-	cp build/build.zip .
+	cp build/build.zip temp/.
 	rm -rf build
-
+	aws s3 sync temp s3://instalytics-deployment-package
+	aws lambda update-function-code --function-name instalytics --s3-key build.zip --s3-bucket instalytics-deployment-package	
 install-requirements:
 	pip install -r requirements.txt -t ./lib/
