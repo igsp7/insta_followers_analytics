@@ -12,3 +12,7 @@ env/
 
 ### Project specifics
 bin/
+
+### Build package
+package/build.zip
+
