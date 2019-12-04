@@ -32,15 +32,15 @@ build-lambda-package: clean fetch-dependencies
 	cp build/build.zip .
 	rm -rf build
 
-rebuild-lambda-package:
+deploy-lambda-package:
+	git pull origin master
 	mkdir build
 	cp -r src build/.
 	cp -r bin build/.
 	cp -r lib build/.
+	pip install -r requirements.txt -t build/lib/.
 	cd build; zip -9qr build.zip .
-	cp build/build.zip temp/.
+	cp build/build.zip package/.
 	rm -rf build
 	aws s3 sync temp s3://instalytics-deployment-package
 	aws lambda update-function-code --function-name instalytics --s3-key build.zip --s3-bucket instalytics-deployment-package	
-install-requirements:
-	pip install -r requirements.txt -t ./lib/
