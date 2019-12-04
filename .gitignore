@@ -14,5 +14,5 @@ env/
 bin/
 
 ### Build package
-package/build.zip
+build.zip
 
