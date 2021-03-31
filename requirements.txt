@@ -1,4 +1,4 @@
 selenium==2.53.6
 chromedriver-install==1.0.3
 beautifulsoup4==4.8.1
-lxml==4.4.1
+lxml==4.6.3
